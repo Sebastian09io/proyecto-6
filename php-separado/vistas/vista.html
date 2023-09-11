@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Formulario</title>
+</head>
+
+<body>
+
+    <div class="tablad">
+        <table>
+            <tbody>
+                
+                <thead>
+                    <tr>
+                        <th class="titulo">MOTOS COTIZADAS</th>
+                        <th><button id="openModalButton">COTIZAR</button></th>
+                    </tr>
+                </thead>
+                
+                <tr>
+                <th id="contactList"> </th>
+                <th></th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            
+            <h2 class="titulo">COTIZA TU MOTO</h2>
+            <form id="addContactForm">
+                <label class="titulo" for="name">Nombre Completo:</label>
+                <input type="text" id="name" name="name" required><br>
+                <label class="titulo" for="lastname">Modelo:</label>
+                <input type="text" id="lastname" name="lastname" required><br>
+                <label class="titulo" for="username">Cc:</label>
+                <input type="text" id="username" name="username" required><br>
+                <label class="titulo" for="password">Cedula:</label>
+                <input type="password" id="password" name="password" required><br>
+                <label class="titulo" for="email">Correo electrónico:</label>
+                <input type="email" id="email" name="email" required><br>
+                <button type="submit">Aceptar</button>
+                <input type="button" value="Ocultar" class="close" style="cursor:pointer;"></input>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        
+        function getContactList() {
+            fetch('http://localhost/backserv/Back.php', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const contactList = document.getElementById('contactList');
+                contactList.innerHTML = '';
+                data.forEach(contact => {
+                    const listItem = document.createElement('h4');
+                    listItem.textContent = ` ${contact.name} | ${contact.lastname} | ${contact.username} | ${contact.password} | ${contact.email}`;
+
+                    // Botón para actualizar contacto
+                    const updateButton = document.createElement('button');
+                    updateButton.textContent = 'Actualizar';
+                    updateButton.addEventListener('click', () => updateContact(contact.id));
+                    
+                    // Botón para eliminar contacto
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Eliminar';
+                    deleteButton.addEventListener('click', () => deleteContact(contact.id));
+
+                    listItem.appendChild(updateButton);
+                    listItem.appendChild(deleteButton);
+
+                    contactList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Error al obtener la lista de contactos:', error));
+        }
+
+        // Función para agregar un nuevo contacto al backend
+        function addContact(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch('http://localhost/backserv/Back.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Contacto agregado:', data);
+                form.reset();
+                getContactList(); // Actualizar la lista de contactos después de agregar uno nuevo
+            })
+            .catch(error => console.error('Error al agregar contacto:', error));
+        }
+
+        // Función para actualizar un contacto existente
+        function updateContact(id) {
+            const name = prompt('Modifica el nombre:');
+            const lastname = prompt('Modifica el modelo:');
+            const username = prompt('Modifica el cilindraje:');
+            const password = prompt('Modifica la Cedula:');
+            const email = prompt('Modifica el correo:');
+
+            const updatedContact = {
+                id: id,
+                name: name,
+                lastname: lastname,
+                username: username,
+                password: password,
+                email: email
+            };
+
+            fetch(`http://localhost/backserv/Back.php`, {
+                method: 'PUT',
+                body: JSON.stringify(updatedContact),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Contacto actualizado correctamente');
+                    getContactList(); // Actualizar lista de contactos después de la actualización
+                } else {
+                    console.error('Error al actualizar contacto:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error al actualizar contacto:', error));
+        }
+
+        // Función para eliminar un contacto
+        function deleteContact(id) {
+            fetch(`http://localhost/backserv/Back.php?id=${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Contacto eliminado correctamente');
+                    getContactList(); // Actualizar la lista de contactos después de eliminar
+                } else {
+                    console.error('Error al eliminar contacto:', response.statusText);
+                }
+            })
+            .catch(error => console.error('Error al eliminar contacto:', error));
+        }
+
+        // agregar contacto
+        const addContactForm = document.getElementById('addContactForm');
+        addContactForm.addEventListener('submit', addContact);
+
+        // Llamar a la función para obtener la lista de contactos cuando la página se carga
+        getContactList();
+
+        // Abrir el modal cuando se hace clic en el botón "Agregar Nuevo Contacto"
+        const openModalButton = document.getElementById('openModalButton');
+        openModalButton.addEventListener('click', () => {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'block';
+        });
+
+        // Cerrar el modal cuando se hace clic en el botón de cierre o fuera del contenido del modal
+        const modal = document.getElementById('myModal');
+        const closeButton = modal.querySelector('.close');
+
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+    </script>
+</body>
+
+</html>
