@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Formulario</title>
+</head>
+<body>
+
+<style>
+
+
+
+	html{
+		background-color: rgb(47, 47, 71);
+		font-family: 'Segoe UI', sans-serif;
+	}
+
+	label{
+		color:white;
+	}
+
+	input{
+padding: 8px;
+border: 2px solid #000000;
+border-radius:4px;
+outline:none;
+transition: .3s;
+margin: 2% auto;
+}
+
+.botonz{
+    border: none;
+    padding: 2px 1px;
+    text-decoration: none;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+    border: 2px solid #0704d3;
+    font-weight: 650;
+	margin-top:-3%;
+	margin-left:-5%;
+	position: absolute;
+    }
+
+    .botonz:hover{
+        background-color: #4d4bf3;
+        color: white;
+        
+    }
+	
+
+	.botonzt{
+    border: none;
+    padding: 2px 1px;
+    text-decoration: none;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+    border: 2px solid #0704d3;
+    font-weight: 600;
+	margin-top:-3%;
+	margin-left:0%;
+	position: absolute;
+    }
+
+    .botonzt:hover{
+        background-color: #4d4bf3;
+        color: white;
+        
+    }
+
+	form{
+		display: flex;
+		flex-direction: column;
+		gap: 37px;
+		width: 40%;
+		margin: 7% auto;
+		text-align: center;
+		background:gray;
+		border: 1px solid #888;
+		border-radius: 5px;
+		}
+
+		.titulo{
+			color:white;
+            position:absolute;
+			top:5%;
+			left:45%;
+			margin:0;
+			}
+
+</style>
+
+<h3 class="titulo">REGISTRA TUS DATOS</h2>
+
+	<div>
+		<form th:action="@{/save}" th:object="${persona}" method="POST">
+			<div></div>
+			<div>
+				<div>
+					<label>ID</label> <input type="text" th:field="*{id}" readonly="readonly" />
+				</div>
+				<div>
+					<label>NOMBRE</label> <input type="text" th:field="*{name}" />
+				</div>
+				<div>
+					<label>APELLIDO</label> <input type="text" th:field="*{lastname}" />
+				</div>
+				<div>
+					<label>CELULAR</label> <input type="text" th:field="*{phone}" />
+				</div>
+				<div>
+					<label>CORREO</label> <input type="text" th:field="*{email}" />
+				</div>
+
+				<div>
+					<label>DIRECCION</label> <input type="text" th:field="*{direc}" />
+				</div>
+			</div>
+			<div>
+				<input class="botonz" type="submit" value="Guardar" /> <a class="botonzt" th:href="@{/listar}">Volver a la tabla</a>
+			</div>
+			
+		</form>
+	</div>
+</body>
+</html>
